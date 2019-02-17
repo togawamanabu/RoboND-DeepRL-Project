@@ -27,7 +27,7 @@
 #define DEBUG_DQN false
 #define GAMMA 0.9f
 #define EPS_START 0.9f
-#define EPS_END 0.05f
+#define EPS_END 0.01f
 #define EPS_DECAY 200
 
 /*
@@ -38,7 +38,7 @@
 #define INPUT_WIDTH   64
 #define INPUT_HEIGHT  64
 #define OPTIMIZER "RMSprop"
-#define LEARNING_RATE 0.1f
+#define LEARNING_RATE 0.03f
 #define REPLAY_MEMORY 10000
 #define BATCH_SIZE 32
 #define USE_LSTM false
@@ -266,8 +266,10 @@ void ArmPlugin::onCollisionMsg(ConstContactsPtr &contacts)
 		*/
 
 		const char* collision1 = contacts->contact(i).collision1().c_str();
+		const char* collision2 = contacts->contact(i).collision2().c_str();		
 		
 		if (strcmp(collision1, COLLISION_ITEM) == 0) {
+		  //if (strcmp(collision2, COLLISION_POINT) == 0) {		  
 		  rewardHistory = REWARD_WIN;
 		  newReward  = true;
 		  endEpisode = true;
