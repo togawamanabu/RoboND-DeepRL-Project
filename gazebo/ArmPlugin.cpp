@@ -38,10 +38,10 @@
 #define INPUT_WIDTH   64
 #define INPUT_HEIGHT  64
 #define OPTIMIZER "RMSprop"
-#define LEARNING_RATE 0.05f
+#define LEARNING_RATE 0.1f
 #define REPLAY_MEMORY 10000
 #define BATCH_SIZE 32
-#define USE_LSTM true
+#define USE_LSTM false
 #define LSTM_SIZE 256
 
 /*
@@ -49,8 +49,8 @@
 /
 */
 
-#define REWARD_WIN  200.0f
-#define REWARD_LOSS -200.0f
+#define REWARD_WIN  800.0f
+#define REWARD_LOSS -800.0f
 
 // Define Object Names
 #define WORLD_NAME "arm_world"
@@ -588,17 +588,17 @@ void ArmPlugin::OnUpdate(const common::UpdateInfo& updateInfo)
 		/
 		*/
 
-		const bool checkGroundContact = gripBBox.min.z <= groundContact || gripBBox.max.z <= groundContact;
+		const bool checkGroundContact = gripBBox.min.z <= groundContact;
 		
 		if(checkGroundContact)
 		{
 						
 			if(DEBUG){printf("GROUND CONTACT, EOE\n");}
 
-			rewardHistory = REWARD_LOSS * lastGoalDistance/3;
+			rewardHistory = REWARD_LOSS;
 			newReward     = true;
 			endEpisode    = true;
-		}
+		} 
 		
 		
 		/*
@@ -617,11 +617,12 @@ void ArmPlugin::OnUpdate(const common::UpdateInfo& updateInfo)
 			if( episodeFrames > 1 )
 			{
 				const float distDelta  = lastGoalDistance - distGoal;
-				const float alpha = 0.3;
+				const float alpha = 0.4f;
 				
 				// compute the smoothed moving average of the delta of the distance to the goal
 				avgGoalDelta  = (avgGoalDelta * alpha) + (distDelta * (1.0 - alpha));
-				rewardHistory = avgGoalDelta * 100;
+				rewardHistory = avgGoalDelta * REWARD_WIN / 10;
+				//printf("reward %f \n", rewardHistory);
 				newReward     = true;	
 			}
 
